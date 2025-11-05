@@ -115,7 +115,9 @@ class Maze(Page):
     @staticmethod
     def live_method(player, data):
         """
-        data = {'move': 'up'/'down'/'left'/'right'}
+        data = {
+            'move': 'up'/'down'/'left'/'right'
+        }
         """
         maze = load_maze(player.participant.vars['maze_order'][player.round_number - 1])
         printable_maze = maze
@@ -123,7 +125,7 @@ class Maze(Page):
         move = data['move']
         print(move)
         print(player.id_in_group)
-        printable_maze[r][c] = '*'
+        printable_maze[r][c] = '@'
 
         dr = dc = 0
         if move == 'up': dr = -1
@@ -146,9 +148,11 @@ class Maze(Page):
         else:
             # valid move
             printable_maze[player.pos_row][player.pos_col] = ' '
+            if player.pos_row == 0 and player.pos_col == 4:
+                printable_maze[player.pos_row][player.pos_col] = 'S'
             player.pos_row = new_r
             player.pos_col = new_c
-            printable_maze[player.pos_row][player.pos_col] = '*'
+            printable_maze[player.pos_row][player.pos_col] = '@'
             print_maze(printable_maze)
             if cell == 'E':
                 return {player.id_in_group: {'status': 'finished'}}
