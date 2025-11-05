@@ -1,0 +1,136 @@
+{{ block title }}Maze {{ player.round_number }} {{ endblock }}
+{{ block content }}
+    <p>Press "Start" to begin. You won’t see the maze itself — use arrow keys to navigate.</p>
+    <p>
+        You will be given the following cue: {{ type_of_learning }}.
+    </p>
+
+    {{ if type_of_learning == 'Visual'}}
+        <p>
+            For this type of cue you will see a gray dot in the center of the page.
+            If you hit a wall, the dot will turn red. If you move to a valid space the dot will turn green.
+        </p>
+    {{ endif }}
+
+    {{ if type_of_learning == 'Auditory'}}
+        <p>
+            For this type of cue you will hear nothing by default. If you move into a wall you will hear a beep.
+            If you move into a valid space there will be no sound played at all.
+        </p>
+    {{ endif }}
+
+    {{ if type_of_learning == 'No Cue'}}
+        <p>
+            For this type of cue you will be given no cues at all to indicate interaction with a wall.
+        </p>
+    {{ endif }}
+
+    <button id="start-btn" type="button" class="btn btn-primary">Start</button>
+
+    <div id="cue-dot"
+        style="width:30px; height:30px; border-radius:50%; background-color:gray; margin:auto;">
+    </div>
+    <p style="text-align:center;">(Use arrow keys to move — maze invisible)</p>
+
+    <button id="give-up-btn" type="button" style="display:none;">Give Up</button>
+    <button id="reset-btn" type="button" class="btn btn-warning" style="display:none;">Reset</button>
+
+    {{ next_button }}
+    <input type="hidden" name="timestamp_start" id="id_timestamp_start">
+    <input type="hidden" name="timestamp_end" id="id_timestamp_end">
+    <input type="hidden" name="gave_up" id="id_gave_up">
+
+    <p id="status"></p>
+
+    <script>
+            const typeOfLearning = "{{ type_of_learning }}";  // Visual, Auditory, No Cue
+            let wallHits = 0;
+            let mazeStarted = false;
+            let startTime = 0;
+            let endTime = 0;
+            let numResets = 0;
+            const cueDot = document.getElementById('cue-dot');
+            function finishMaze() {
+                mazeStarted=false;
+                document.getElementById('id_timestamp_end').value=Date.now();
+                giveUpBtn.style.display='none';
+                resetBtn.style.display='none';
+                nextBtn.style.display='inline-block';
+            }
+            function liveRecv(data) {
+                console.log("STATUS: ", data.status);
+                if (data.status === 'wall') {
+                    if(typeOfLearning==='visual') cueDot.style.backgroundColor='red';
+                    else if(typeOfLearning==='auditory') new Audio('data:audio/wav;base64,...').play();
+                    wallHits++;
+                } else if (data.status === 'moved') {
+                    if(typeOfLearning==='visual') cueDot.style.backgroundColor='green';
+                    setTimeout(()=>cueDot.style.backgroundColor='gray',300);
+                } else if(data.status==='finished'){
+                    finishMaze();
+                }
+            };
+            
+            document.addEventListener('DOMContentLoaded', (event) => {
+                const nextBtn = document.querySelector('.otree-btn-next');
+                if (nextBtn) {
+                    nextBtn.style.display = 'none';  // hide initially
+                }
+                const startBtn = document.getElementById('start-btn');
+                const giveUpBtn = document.getElementById('give-up-btn');
+                const cueDot = document.getElementById('cue-dot');
+                const resetBtn = document.getElementById('reset-btn');
+
+                nextBtn.style.display = 'none';   // hide Next initially
+
+                if (typeOfLearning === "Visual") {
+                    cueDot.style.display = "block";
+                } else {
+                    cueDot.style.display = "none";
+                }
+
+                let audioCtx;
+                if (typeOfLearning === "Auditory") {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                startBtn.addEventListener('click',()=>{
+                    mazeStarted=true;
+                    startTime=Date.now();
+                    document.getElementById('id_timestamp_start').value=startTime;
+                    startBtn.style.display='none';
+                    giveUpBtn.style.display='inline-block';
+                    resetBtn.style.display='inline-block';
+
+                    document.addEventListener('keydown', (e)=>{
+                        if(!mazeStarted) return;
+                        let move=null;
+                        if(e.key==='ArrowUp') move='up';
+                        else if(e.key==='ArrowDown') move='down';
+                        else if(e.key==='ArrowLeft') move='left';
+                        else if(e.key==='ArrowRight') move='right';
+                        else return;
+
+                        liveSend({move: move});  // <-- send move to server
+                    });
+                });
+
+                giveUpBtn.addEventListener('click',()=>{
+                    document.getElementById('id_gave_up').value=true;
+                    finishMaze();
+                });
+
+                resetBtn.addEventListener('click',()=>{
+                    // reset position on server
+                    fetch('', {
+                        method:'POST',
+                        headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({'reset': true})
+                    }).then(()=>{cueDot.style.backgroundColor='gray'});
+                });
+            });
+    </script>
+
+    {{ include_sibling 'instructions.html' }}
+
+{{ endblock }}
