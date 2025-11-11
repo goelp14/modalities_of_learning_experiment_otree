@@ -4,3 +4,4 @@
 otree>=6.0.0b30
 psycopg2>=2.8.4
 sentry-sdk==2.43.0
+django>=5.2.7
