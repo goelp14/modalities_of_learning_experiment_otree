@@ -22,38 +22,72 @@ class Player(BasePlayer):
         label='What is your gender?',
         widget=widgets.RadioSelect,
     )
-    crt_bat = models.IntegerField(
-        label='''
-        A bat and a ball cost 22 dollars in total.
-        The bat costs 20 dollars more than the ball.
-        How many dollars does the ball cost?'''
+
+    education_level = models.StringField(
+        choices=[['No Degree', 'No Degree'], ['Associate', 'Associate'], ['Bachelor', 'Bachelor'], ['Master', 'Master'], ['Doctoral', 'Doctoral'], ['Professional', 'Professional']],
+        label='What is the highest degree of education recieved?',
+        widget=widgets.RadioSelect,
     )
-    crt_widget = models.IntegerField(
+
+    metadata_strat = models.LongStringField(
         label='''
-        If it takes 5 machines 5 minutes to make 5 widgets,
-        how many minutes would it take 100 machines to make 100 widgets?
+        What was your strategy to approaching each maze (if any)?'''
+    )
+
+    metadata_help = models.BooleanField(
+        label='''
+        Did you use any external resources?
         '''
     )
-    crt_lake = models.IntegerField(
+    metadata_diffnocue = models.IntegerField(
         label='''
-        In a lake, there is a patch of lily pads.
-        Every day, the patch doubles in size.
-        If it takes 48 days for the patch to cover the entire lake,
-        how many days would it take for the patch to cover half of the lake?
-        '''
+        On a scale of 1 - 10, where 1 is super easy and 10 is impossible, how difficult was the no cue maze?
+        ''',
+        min=1,
+        max=10
     )
+
+    metadata_diffauditory = models.IntegerField(
+        label='''
+        On a scale of 1 - 10, where 1 is super easy and 10 is impossible, how difficult was the auditory cue maze?
+        ''',
+        min=1,
+        max=10
+    )
+
+    metadata_diffvisual = models.IntegerField(
+        label='''
+        On a scale of 1 - 10, where 1 is super easy and 10 is impossible, how difficult was the visual cue maze?
+        ''',
+        min=1,
+        max=10
+    )
+
+    metadata_preferred = models.StringField(
+        choices=[['Auditory', 'Auditory'], ['Visual', 'Visual'], ['No Cue', 'No Cue']],
+        label='Which type of cue do you prefer the most?',
+        widget=widgets.RadioSelect,
+    )
+
+    metadata_giveup = models.LongStringField(
+        label='''
+        If you gave up, why? Leave this blank if you did not give up.
+        ''',
+        blank=True)
 
 
 # FUNCTIONS
 # PAGES
 class Demographics(Page):
     form_model = 'player'
-    form_fields = ['age', 'gender']
+    form_fields = ['age', 'gender', 'education_level']
 
 
 class CognitiveReflectionTest(Page):
     form_model = 'player'
-    form_fields = ['crt_bat', 'crt_widget', 'crt_lake']
+    form_fields = ['metadata_strat', 'metadata_help', 'metadata_diffnocue', 'metadata_diffauditory', 'metadata_diffvisual', 'metadata_preferred', 'metadata_giveup']
 
+class Finish(Page):
+    pass
 
-page_sequence = [Demographics, CognitiveReflectionTest]
+page_sequence = [Demographics, CognitiveReflectionTest, Finish]

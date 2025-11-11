@@ -17,11 +17,15 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    age = models.IntegerField(label='What is your age?', min=13, max=125)
-    gender = models.StringField(
-        choices=[['Male', 'Male'], ['Female', 'Female']],
-        label='What is your gender?',
-        widget=widgets.RadioSelect,
+    # age = models.IntegerField(label='What is your age?', min=13, max=125)
+    # gender = models.StringField(
+    #     choices=[['Male', 'Male'], ['Female', 'Female']],
+    #     label='What is your gender?',
+    #     widget=widgets.RadioSelect,
+    # )
+
+    consent = models.BooleanField(
+        label='Do you consent to collecting data for this experiment?',
     )
 
 
@@ -29,7 +33,8 @@ class Player(BasePlayer):
 
 # PAGES
 class Introduction(Page):
-    pass
+    form_model = 'player'
+    form_fields = ['consent']
 
 
 

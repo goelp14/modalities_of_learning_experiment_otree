@@ -1,5 +1,7 @@
 from os import environ
+from dotenv import load_dotenv
 
+load_dotenv()
 
 SESSION_CONFIGS = [
     dict(
@@ -32,21 +34,18 @@ USE_POINTS = True
 
 ROOMS = [
     dict(
-        name='econ101',
-        display_name='Econ 101 class',
-        participant_label_file='_rooms/econ101.txt',
+        name='mazes',
+        display_name='Modalities of Learning Experiment',
+        welcome_page="_welcome_pages/RoomWelcomePage.html"
     ),
-    dict(name='live_demo', display_name='Room for live demo (no participant labels)'),
 ]
 
 ADMIN_USERNAME = 'admin'
 # for security, best to set admin password in an environment variable
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
-
 DEMO_PAGE_INTRO_HTML = """
 Here are some oTree games.
 """
-
 
 SECRET_KEY = '5285467767714'
 

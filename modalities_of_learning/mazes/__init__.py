@@ -18,21 +18,24 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
-    age = models.IntegerField(label='What is your age?', min=13, max=125)
-    gender = models.StringField(
-        choices=[['Male', 'Male'], ['Female', 'Female']],
-        label='What is your gender?',
-        widget=widgets.RadioSelect,
-    )
+    # age = models.IntegerField(label='What is your age?', min=13, max=125)
+    # gender = models.StringField(
+    #     choices=[['Male', 'Male'], ['Female', 'Female']],
+    #     label='What is your gender?',
+    #     widget=widgets.RadioSelect,
+    # )
     maze1 = models.IntegerField(label="First Maze")
     maze2 = models.IntegerField(label="Second Maze")
     maze3 = models.IntegerField(label="Third Maze")
     type_of_learning1 = models.StringField(label="First Type of Learning")
     type_of_learning2 = models.StringField(label="Second Type of Learning")
     type_of_learning3 = models.StringField(label="Third Type of Learning")
-    timestamp_start = models.FloatField()
-    timestamp_end = models.FloatField()
-    gave_up = models.BooleanField(initial=False)
+    timestamp_start = models.FloatField(label="Maze Start Time")
+    timestamp_end = models.FloatField(label="Maze End Time")
+    timestamp_total_time_taken = models.FloatField(label="Maze Time Taken (Seconds)")
+    wallhits = models.IntegerField(label="Number of Mistakes (Wall Hits)", initial=0)
+    gave_up = models.BooleanField(initial=False, label="Player Gave Up?")
+    num_resets = models.IntegerField(label="Number of Resets", initial=0)
 
     # current position
     pos_row = models.IntegerField(initial=0)
@@ -110,13 +113,13 @@ def print_maze(maze):
 # PAGES
 class Maze(Page):
     form_model = 'player'
-    form_fields = ['timestamp_start', 'timestamp_end', 'gave_up']
+    form_fields = ['timestamp_start', 'timestamp_end', 'timestamp_total_time_taken', 'gave_up']
 
     @staticmethod
     def live_method(player, data):
         """
         data = {
-            'move': 'up'/'down'/'left'/'right'
+            'move': 'up'/'down'/'left'/'right'/'reset'
         }
         """
         maze = load_maze(player.participant.vars['maze_order'][player.round_number - 1])
@@ -126,6 +129,12 @@ class Maze(Page):
         print(move)
         print(player.id_in_group)
         printable_maze[r][c] = '@'
+
+        if move == 'reset':
+            player.pos_row = 0
+            player.pos_col = 4
+            player.num_resets += 1
+            return {player.id_in_group: {'status': 'reset'}}
 
         dr = dc = 0
         if move == 'up': dr = -1
@@ -138,12 +147,14 @@ class Maze(Page):
 
         # check bounds
         if not (0 <= new_r < len(maze)) or not (0 <= new_c < len(maze[0])):
+            player.wallhits += 1
             return {player.id_in_group: {'status': 'wall'}}
 
         cell = maze[new_r][new_c]
 
         if cell == '#':
             print_maze(printable_maze)
+            player.wallhits += 1
             return {player.id_in_group: {'status': 'wall'}}
         else:
             # valid move
