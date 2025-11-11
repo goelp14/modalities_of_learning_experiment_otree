@@ -32,10 +32,11 @@ USE_POINTS = True
 ROOMS = [
     dict(
         name='mazes',
-        display_name='Modalities of Learning Experiment',
-        welcome_page="_welcome_pages/RoomWelcomePage.html"
+        display_name='Modalities of Learning Experiment'
     ),
 ]
+
+# welcome_page="_welcome_pages/RoomWelcomePage.html"
 
 ADMIN_USERNAME = 'admin'
 # for security, best to set admin password in an environment variable

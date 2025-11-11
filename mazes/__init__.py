@@ -32,7 +32,7 @@ class Player(BasePlayer):
     type_of_learning3 = models.StringField(label="Third Type of Learning")
     timestamp_start = models.FloatField(label="Maze Start Time")
     timestamp_end = models.FloatField(label="Maze End Time")
-    timestamp_total_time_taken = models.FloatField(label="Maze Time Taken (Seconds)")
+    timestamp_total_time_taken = models.FloatField(label="Maze Time Taken (Minutes)")
     wallhits = models.IntegerField(label="Number of Mistakes (Wall Hits)", initial=0)
     gave_up = models.BooleanField(initial=False, label="Player Gave Up?")
     num_resets = models.IntegerField(label="Number of Resets", initial=0)

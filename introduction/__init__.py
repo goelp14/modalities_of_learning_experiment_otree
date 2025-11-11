@@ -24,17 +24,19 @@ class Player(BasePlayer):
     #     widget=widgets.RadioSelect,
     # )
 
-    consent = models.BooleanField(
-        label='Do you consent to collecting data for this experiment?',
-    )
+    # consent = models.BooleanField(
+    #     label='Do you consent to collecting data for this experiment?',
+    # )
+    pass
 
 
 # FUNCTIONS
 
 # PAGES
 class Introduction(Page):
-    form_model = 'player'
-    form_fields = ['consent']
+    # form_model = 'player'
+    # form_fields = ['consent']
+    pass
 
 
 

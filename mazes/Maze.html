@@ -61,7 +61,7 @@
                 mazeStarted = false;
                 endTime = Date.now();
                 document.getElementById('id_timestamp_end').value=endTime;
-                document.getElementById('id_timestamp_total_time_taken').value = endTime - startTime
+                document.getElementById('id_timestamp_total_time_taken').value = (endTime - startTime) / 60000;
                 giveUpBtn.style.display='none';
                 resetBtn.style.display='none';
                 nextButton.style.display='inline-block';
@@ -84,6 +84,7 @@
             
             document.addEventListener('DOMContentLoaded', (event) => {
                 const nextBtn = document.querySelector('.otree-btn-next');
+                const formFields = document.getElementById('form-fields')
                 if (nextBtn) {
                     nextBtn.style.display = 'none';  // hide initially
                 }
@@ -93,7 +94,9 @@
                 // const resetBtn = document.getElementById('reset-btn');
 
                 const cueDotLoaded = document.getElementById('cue-dot');
-                cueDotLoaded.style.display = 'none'
+                cueDotLoaded.style.display = 'none';
+
+                formFields.style.display = 'none';
 
                 nextBtn.style.display = 'none';   // hide Next initially
 
@@ -102,7 +105,7 @@
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 }
 
-                startBtn.addEventListener('click',()=>{
+                startBtn.addEventListener('click',() => {
                     mazeStarted=true;
                     startTime=Date.now();
                     document.getElementById('id_timestamp_start').value=startTime;
@@ -134,12 +137,12 @@
                     });
                 });
 
-                giveUpBtn.addEventListener('click',()=>{
+                giveUpBtn.addEventListener('click',() => {
                     document.getElementById("id_gave_up-0").checked = true; 
                     finishMaze();
                 });
 
-                resetBtn.addEventListener('click',()=>{
+                resetBtn.addEventListener('click',() => {
                     // reset position on server
                     liveSend({move: 'reset'});
                 });
